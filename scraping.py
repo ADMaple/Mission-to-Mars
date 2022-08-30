@@ -13,6 +13,11 @@ def scrape_all():
     executable_path = {'executable_path': ChromeDriverManager().install()}
     browser = Browser('chrome', **executable_path, headless=True)
 
+    # Create New Dictionary for Hemispheres
+    news_title, news_paragraph = mars_news(browser)
+    hemisphere_results = hemispheres(browser)  
+
+
     # Run all scraping functions and store results in dictionary
     data = {
       "news_title": news_title,
@@ -102,7 +107,50 @@ def mars_facts():
     return df.to_html()
 
 
-if __name__ == "__main__":
+# Scrape Hemispheres Challenge
+
+def hemispheres(browser):
+
+# Use browser to visit the URL 
+    url = 'https://marshemispheres.com/'
+    browser.visit(url)
+
+# Create a list to hold the images and titles (output to disply in #4 below).
+    hemisphere_image_urls = []
+
+# Write code to retrieve the image urls and titles for each hemisphere.
+    try:
+        
+        for content in range(4):
     
+            #click each link... https://splinter.readthedocs.io/en/latest/elements-in-the-page.html
+            browser.links.find_by_partial_text('Hemisphere')[content].click()
+            
+            #using soup to parse (jupycell 4, above)
+            html = browser.html
+            hemisphere_soup = soup(html, 'html.parser')
+            
+            #scrape the interior page...
+            title = hemisphere_soup.find('h2', class_='title').text
+            img_url = hemisphere_soup.find('li').a.get('href')
+
+            #define dictionary, define dictionary items
+            hemisphere_content = {}
+            hemisphere_content['title']=title
+            hemisphere_content['img_url']= f'https://marshemispheres.com/{img_url}' 
+            
+            #add scraped stuff together into hemisphere_image_urls
+            hemisphere_image_urls.append(hemisphere_content)
+            browser.back()  #<<LOOP
+
+    except AttributeError:
+        return None
+
+     # Print the list that holds the dictionary of each image url and title.
+    return hemisphere_image_urls
+       
+
+if __name__ == "__main__":
+
     # If running as script, print scraped data
     print(scrape_all())
