@@ -24,6 +24,7 @@ def scrape_all():
       "news_paragraph": news_paragraph,
       "featured_image": featured_image(browser),
       "facts": mars_facts(),
+      "hemispheres": hemisphere_results,
       "last_modified": dt.datetime.now()
 }
 
@@ -75,7 +76,7 @@ def featured_image(browser):
     # Parse the resulting html with soup
     html = browser.html
     img_soup = soup(html, 'html.parser')
-
+    
     # Add try/except for error handling
     try:
         # Find the relative image url
